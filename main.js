@@ -1,24 +1,25 @@
+// Find smallest array for each sport
+// need to sort
+// Loop through all bookies and print best margin for chosen sport
+
 let allGames = [];
 const selectedBooks = ["neds", "sportsbet"];
-const selectedSports = ["rugby-league", "afl"];
+const selectedSport = "rugby-league";
 
 async function main() {
 	try {
 		await importBookieData();
+		sortTeamsList(allGames);
 		console.log(allGames);
-		// const aflNeds = await getGames("neds", "afl");
-		// const aflSportsbet = await getGames("sportsbet", "afl");
-		// const rugbyleagueNeds = await getGames("neds", "rugby-league");
-		// const rugbyleagueSportsbet = await getGames("sportsbet", "rugby-league");
-		// sortTeamsList(aflNeds);
-		// sortTeamsList(aflSportsbet);
-		// sortTeamsList(rugbyleagueNeds);
-		// sortTeamsList(rugbyleagueSportsbet);
-		// compareBooks(aflNeds, aflSportsbet);
-		// console.log(" ");
-		// compareBooks(rugbyleagueNeds, rugbyleagueSportsbet);
 	} catch (error) {
 		console.error(error);
+	}
+}
+
+async function importBookieData() {
+	for (let i = 0; i < selectedBooks.length; i++) {
+		let allBookieGames = await getGames(selectedBooks[i], selectedSport);
+		allGames.push(allBookieGames);
 	}
 }
 
@@ -31,11 +32,9 @@ async function getGames(bookie, sport) {
 	}
 }
 
-async function importBookieData() {
-	for (let i = 0; i < selectedBooks.length; i++) {
-		for (let j = 0; j < selectedSports.length; j++) {
-			allGames.push(await getGames(selectedBooks[j], selectedSports[i]));
-		}
+function sortTeamsList(array) {
+	for (let i = 0; i < array.length; i++) {
+		array[i].sort((a, b) => a.firstTeam.localeCompare(b.firstTeam));
 	}
 }
 
@@ -50,10 +49,6 @@ function compareBooks(a, b) {
 		)}`;
 		console.log(gameData);
 	}
-}
-
-function sortTeamsList(array) {
-	array.sort((a, b) => a.firstTeam.localeCompare(b.firstTeam));
 }
 
 function findMargin(book1team1, book1team2, book2team1, book2team2) {
