@@ -4,11 +4,11 @@
 
 let allGames = [];
 const selectedBooks = ["neds", "sportsbet"];
-const selectedSport = "rugby-league";
+const selectedSport = "afl";
 
 async function main() {
 	try {
-		await importBookieData();
+		await importBookieDataForChosenSport();
 		sortTeamsList(allGames);
 		console.log(allGames);
 	} catch (error) {
@@ -16,10 +16,20 @@ async function main() {
 	}
 }
 
-async function importBookieData() {
+async function importBookieDataForChosenSport() {
+	let lowestAmountOfGames = Infinity;
 	for (let i = 0; i < selectedBooks.length; i++) {
 		let allBookieGames = await getGames(selectedBooks[i], selectedSport);
+
+		if (allBookieGames.length < lowestAmountOfGames)
+			lowestAmountOfGames = allBookieGames.length;
+
 		allGames.push(allBookieGames);
+	}
+
+	for (let i = 0; i < allGames.length; i++) {
+		if (allGames[i].length > lowestAmountOfGames)
+			allGames[i].splice(lowestAmountOfGames);
 	}
 }
 
@@ -58,5 +68,7 @@ function findMargin(book1team1, book1team2, book2team1, book2team2) {
 	let bestMargin = ((margin1 < margin2 ? margin1 : margin2) * 100).toFixed(2);
 	return bestMargin + "%";
 }
+
+function trimArray(array, desiredLength) {}
 
 main();
