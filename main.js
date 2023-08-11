@@ -1,35 +1,39 @@
-// Find smallest array for each sport
-// need to sort
 // Loop through all bookies and print best margin for chosen sport
 
 let allGames = [];
-const selectedBooks = ["neds", "sportsbet"];
+const selectedBooks = ["neds", "sportsbet", "tab", "pointsbet"];
 const selectedSport = "afl";
+
+const allSports = ["afl", "rugby-league"];
 
 async function main() {
 	try {
-		await importBookieDataForChosenSport();
-		sortTeamsList(allGames);
+		await importAllSports();
+		allGames.forEach((game) => sortTeamsList(game));
 		console.log(allGames);
 	} catch (error) {
 		console.error(error);
 	}
 }
 
-async function importBookieDataForChosenSport() {
+async function importBookieDataForChosenSport(sport) {
 	let lowestAmountOfGames = Infinity;
+	let sortedSport = [];
 	for (let i = 0; i < selectedBooks.length; i++) {
-		let allBookieGames = await getGames(selectedBooks[i], selectedSport);
+		let allBookieGames = await getGames(selectedBooks[i], sport);
 
 		if (allBookieGames.length < lowestAmountOfGames)
 			lowestAmountOfGames = allBookieGames.length;
 
-		allGames.push(allBookieGames);
+		sortedSport.push(allBookieGames);
 	}
+	allGames.push(sortedSport);
+	trimGamesArrayLength(sortedSport, lowestAmountOfGames);
+}
 
-	for (let i = 0; i < allGames.length; i++) {
-		if (allGames[i].length > lowestAmountOfGames)
-			allGames[i].splice(lowestAmountOfGames);
+async function importAllSports() {
+	for (let i = 0; i < allSports.length; i++) {
+		await importBookieDataForChosenSport(allSports[i]);
 	}
 }
 
@@ -69,6 +73,10 @@ function findMargin(book1team1, book1team2, book2team1, book2team2) {
 	return bestMargin + "%";
 }
 
-function trimArray(array, desiredLength) {}
+function trimGamesArrayLength(array, desiredLength) {
+	for (let i = 0; i < array.length; i++) {
+		if (array[i].length > desiredLength) array[i].splice(desiredLength);
+	}
+}
 
 main();
