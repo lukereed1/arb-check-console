@@ -1,19 +1,54 @@
-// Loop through all bookies and print best margin for chosen sport
-
-let allGames = [];
-const selectedBooks = ["neds", "sportsbet", "tab", "pointsbet"];
-const selectedSport = "afl";
-
-const allSports = ["afl", "rugby-league"];
+const allGames = [];
+const selectedBooks = ["neds", "sportsbet", "pointsbet"];
+const allSports = ["rugby-league"];
+let selectedSport = "afl";
 
 async function main() {
 	try {
 		await importAllSports();
 		allGames.forEach((game) => sortTeamsList(game));
-		console.log(allGames);
+
+		compareSelectedBooks(allGames[0]);
 	} catch (error) {
 		console.error(error);
 	}
+}
+
+const bestMargins = [];
+function compareSelectedBooks(sport) {
+	for (let k = 0; k < sport[0].length; k++) {
+		let firstTeamBestOdds = 0;
+		let secondTeamBestOdds = 0;
+		let firstTeamBookieWithBestOdds;
+		let secondTeamBookieWithBestOdds;
+		let firstTeamPlaying;
+		let secondTeamPlaying;
+		for (let i = 0; i < sport.length; i++) {
+			console.log(sport[i]);
+			firstTeamPlaying = sport[i][k].firstTeam;
+			secondTeamPlaying = sport[i][k].secondTeam;
+
+			if (sport[i][k].firstTeamOdds >= firstTeamBestOdds) {
+				firstTeamBestOdds = sport[i][k].firstTeamOdds;
+				firstTeamBookieWithBestOdds = sport[i][k].bookie;
+			}
+
+			if (sport[i][k].secondTeamOdds >= secondTeamBestOdds) {
+				secondTeamBestOdds = sport[i][k].secondTeamOdds;
+				secondTeamBookieWithBestOdds = sport[i][k].bookie;
+			}
+		}
+		const gameData = {
+			game: `${firstTeamPlaying} vs ${secondTeamPlaying}`,
+			firstTeamBestOdds: firstTeamBestOdds,
+			firstTeamBookie: firstTeamBookieWithBestOdds,
+			secondTeamBestOdds: secondTeamBestOdds,
+			secondTeamBookie: secondTeamBookieWithBestOdds,
+		};
+
+		bestMargins.push(gameData);
+	}
+	console.log(bestMargins);
 }
 
 async function importBookieDataForChosenSport(sport) {
