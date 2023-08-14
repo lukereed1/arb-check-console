@@ -1,20 +1,31 @@
 const allGames = [];
-const selectedBooks = ["neds", "sportsbet", "pointsbet"];
+const bestMargins = [];
+const selectedBooks = ["unibet", "sportsbet", "tab", "pointsbet"];
 const allSports = ["rugby-league"];
 let selectedSport = "afl";
 
 async function main() {
 	try {
 		await importAllSports();
-		allGames.forEach((game) => sortTeamsList(game));
-
-		compareSelectedBooks(allGames[0]);
+		allGames.forEach((sport) => compareSelectedBooks(sport));
+		console.log(allGames);
+		console.log(bestMargins);
+		printMargins(bestMargins);
 	} catch (error) {
 		console.error(error);
 	}
 }
 
-const bestMargins = [];
+function printMargins(games) {
+	for (let i = 0; i < games.length; i++) {
+		let margin =
+			1 / games[i].firstTeamBestOdds + 1 / games[i].secondTeamBestOdds;
+
+		let roundedMargin = (margin * 100).toFixed(2);
+		console.log(`${games[i].game} | ${roundedMargin}%`);
+	}
+}
+
 function compareSelectedBooks(sport) {
 	for (let k = 0; k < sport[0].length; k++) {
 		let firstTeamBestOdds = 0;
@@ -24,10 +35,8 @@ function compareSelectedBooks(sport) {
 		let firstTeamPlaying;
 		let secondTeamPlaying;
 		for (let i = 0; i < sport.length; i++) {
-			console.log(sport[i]);
 			firstTeamPlaying = sport[i][k].firstTeam;
 			secondTeamPlaying = sport[i][k].secondTeam;
-
 			if (sport[i][k].firstTeamOdds >= firstTeamBestOdds) {
 				firstTeamBestOdds = sport[i][k].firstTeamOdds;
 				firstTeamBookieWithBestOdds = sport[i][k].bookie;
@@ -48,7 +57,6 @@ function compareSelectedBooks(sport) {
 
 		bestMargins.push(gameData);
 	}
-	console.log(bestMargins);
 }
 
 async function importBookieDataForChosenSport(sport) {
@@ -56,6 +64,8 @@ async function importBookieDataForChosenSport(sport) {
 	let sortedSport = [];
 	for (let i = 0; i < selectedBooks.length; i++) {
 		let allBookieGames = await getGames(selectedBooks[i], sport);
+		if (selectedBooks[i].length === 0)
+			console.log(`${selectedBooks[i]} has no games available`);
 
 		if (allBookieGames.length < lowestAmountOfGames)
 			lowestAmountOfGames = allBookieGames.length;
@@ -77,7 +87,7 @@ async function getGames(bookie, sport) {
 		const res = await axios.get(`http://localhost:5000/api/${bookie}/${sport}`);
 		return res.data;
 	} catch (error) {
-		console.error(error);
+		console.log(error.response.data);
 	}
 }
 
