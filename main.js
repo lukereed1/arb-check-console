@@ -1,15 +1,15 @@
+import axios from "axios";
+
 const allGames = [];
 const bestMargins = [];
-const selectedBooks = ["unibet", "sportsbet", "tab", "pointsbet"];
-const allSports = ["rugby-league"];
+const selectedBooks = ["unibet"];
+const allSports = ["afl"];
 let selectedSport = "afl";
 
 async function main() {
 	try {
 		await importAllSports();
 		allGames.forEach((sport) => compareSelectedBooks(sport));
-		console.log(allGames);
-		console.log(bestMargins);
 		printMargins(bestMargins);
 	} catch (error) {
 		console.error(error);
