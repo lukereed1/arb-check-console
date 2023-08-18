@@ -1,6 +1,5 @@
 {
 	"name": "arb-check-frontend",
-	"type": "module",
 	"version": "1.0.0",
 	"description": "",
 	"main": "main.js",

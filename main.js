@@ -1,28 +1,27 @@
-import axios from "axios";
-
 const allGames = [];
 const bestMargins = [];
-const selectedBooks = ["unibet"];
-const allSports = ["afl"];
-let selectedSport = "afl";
+const selectedBooks = ["unibet", "neds", "sportsbet", "tab", "pointsbet"];
+const allSports = ["afl", "rugby-league"];
 
 async function main() {
 	try {
 		await importAllSports();
 		allGames.forEach((sport) => compareSelectedBooks(sport));
-		printMargins(bestMargins);
+		findMargin(bestMargins);
+		bestMargins.sort((a, b) => a.margin - b.margin);
+		console.log(bestMargins);
 	} catch (error) {
 		console.error(error);
 	}
 }
 
-function printMargins(games) {
+function findMargin(games) {
 	for (let i = 0; i < games.length; i++) {
 		let margin =
 			1 / games[i].firstTeamBestOdds + 1 / games[i].secondTeamBestOdds;
 
 		let roundedMargin = (margin * 100).toFixed(2);
-		console.log(`${games[i].game} | ${roundedMargin}%`);
+		bestMargins[i].margin = roundedMargin;
 	}
 }
 
@@ -108,14 +107,6 @@ function compareBooks(a, b) {
 		)}`;
 		console.log(gameData);
 	}
-}
-
-function findMargin(book1team1, book1team2, book2team1, book2team2) {
-	let margin1 = 1 / +book1team1 + 1 / +book2team2;
-	let margin2 = 1 / +book1team2 + 1 / +book2team1;
-
-	let bestMargin = ((margin1 < margin2 ? margin1 : margin2) * 100).toFixed(2);
-	return bestMargin + "%";
 }
 
 function trimGamesArrayLength(array, desiredLength) {
