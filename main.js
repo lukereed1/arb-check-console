@@ -1,8 +1,9 @@
 const axios = require("axios");
 const readline = require("readline");
+
 const allGames = [];
 const bestMargins = [];
-const selectedBooks = ["unibet", "pointsbet"];
+const selectedBooks = ["unibet", "pointsbet", "neds", "sportsbet", ""];
 const allSports = ["afl", "rugby-league"];
 
 const rl = readline.createInterface({
@@ -141,16 +142,17 @@ function trimGamesArrayLength(array, desiredLength) {
 function showLoadingDots() {
 	let count = 0;
 	return setInterval(() => {
-		process.stdout.write("."); // This writes a dot without a newline
+		process.stdout.write(".");
 		count++;
 		if (count === 8) {
-			process.stdout.write("\r        \r"); // Clear the 5 dots and reset to start of the line
+			clearLoadingDots();
 			count = 0;
 		}
-	}, 500); // Every 500 milliseconds
+	}, 500);
 }
 
 function clearLoadingDots() {
 	process.stdout.write("\r        \r");
 }
+
 main();
