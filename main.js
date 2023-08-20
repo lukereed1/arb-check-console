@@ -3,7 +3,7 @@ const readline = require("readline");
 
 const allGames = [];
 const bestMargins = [];
-const selectedBooks = ["unibet", "pointsbet", "neds", "sportsbet", ""];
+const selectedBooks = ["neds", "sportsbet", "pointsbet", "tab", "unibet"];
 const allSports = ["afl", "rugby-league"];
 
 const rl = readline.createInterface({
