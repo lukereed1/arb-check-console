@@ -5,13 +5,11 @@
 	"main": "main.js",
 	"bin": "main.js",
 	"scripts": {
-		"start": "main"
+		"start": "main.js"
 	},
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
-		"-": "^0.0.1",
-		"g": "^2.0.1",
 		"axios": "0.27.2",
 		"pkg": "^5.8.1"
 	}

@@ -1,21 +1,63 @@
+const axios = require("axios");
+const readline = require("readline");
 const allGames = [];
 const bestMargins = [];
-const selectedBooks = ["unibet", "neds", "sportsbet", "tab", "pointsbet"];
+const selectedBooks = ["unibet", "pointsbet"];
 const allSports = ["afl", "rugby-league"];
 
+const rl = readline.createInterface({
+	input: process.stdin,
+	output: process.stdout,
+});
+
 async function main() {
-	try {
-		await importAllSports();
-		allGames.forEach((sport) => compareSelectedBooks(sport));
-		findMargin(bestMargins);
-		bestMargins.sort((a, b) => a.margin - b.margin);
-		console.log(bestMargins);
-	} catch (error) {
-		console.error(error);
+	const userInput = await getInput("1. AFL\n2. NRL\n3. All Sports\n");
+	const loading = showLoadingDots();
+	switch (userInput) {
+		case "1":
+			await importBookieDataForChosenSport("afl");
+			clearInterval(loading);
+			clearLoadingDots();
+			findGameStats();
+			process.exit(0);
+			break;
+		case "2":
+			await importBookieDataForChosenSport("rugby-league");
+			clearInterval(loading);
+			clearLoadingDots();
+			findGameStats();
+			process.exit(0);
+			break;
+		case "3":
+			await importAllSports();
+			clearInterval(loading);
+			clearLoadingDots();
+			findGameStats();
+			process.exit(0);
+			break;
+		default:
+			console.log("Invalid input.\n");
+			main();
+			break;
 	}
 }
 
-function findMargin(games) {
+async function getInput(prompt) {
+	return new Promise((resolve) => {
+		rl.question(prompt, (answer) => {
+			resolve(answer);
+		});
+	});
+}
+
+function findGameStats() {
+	allGames.forEach((sport) => compareSelectedBooks(sport));
+	findMarginPercentage(bestMargins);
+	bestMargins.sort((a, b) => a.margin - b.margin);
+	console.log(bestMargins);
+}
+
+function findMarginPercentage(games) {
 	for (let i = 0; i < games.length; i++) {
 		let margin =
 			1 / games[i].firstTeamBestOdds + 1 / games[i].secondTeamBestOdds;
@@ -58,6 +100,12 @@ function compareSelectedBooks(sport) {
 	}
 }
 
+async function importAllSports() {
+	for (let i = 0; i < allSports.length; i++) {
+		await importBookieDataForChosenSport(allSports[i]);
+	}
+}
+
 async function importBookieDataForChosenSport(sport) {
 	let lowestAmountOfGames = Infinity;
 	let sortedSport = [];
@@ -75,12 +123,6 @@ async function importBookieDataForChosenSport(sport) {
 	trimGamesArrayLength(sortedSport, lowestAmountOfGames);
 }
 
-async function importAllSports() {
-	for (let i = 0; i < allSports.length; i++) {
-		await importBookieDataForChosenSport(allSports[i]);
-	}
-}
-
 async function getGames(bookie, sport) {
 	try {
 		const res = await axios.get(`http://localhost:5000/api/${bookie}/${sport}`);
@@ -90,29 +132,25 @@ async function getGames(bookie, sport) {
 	}
 }
 
-function sortTeamsList(array) {
-	for (let i = 0; i < array.length; i++) {
-		array[i].sort((a, b) => a.firstTeam.localeCompare(b.firstTeam));
-	}
-}
-
-function compareBooks(a, b) {
-	let gameData = [];
-	for (let i = 0; i < a.length; i++) {
-		gameData = `${a[i].firstTeam} vs ${a[i].secondTeam}\nMargin: ${findMargin(
-			a[i].firstTeamOdds,
-			a[i].secondTeamOdds,
-			b[i].firstTeamOdds,
-			b[i].secondTeamOdds
-		)}`;
-		console.log(gameData);
-	}
-}
-
 function trimGamesArrayLength(array, desiredLength) {
 	for (let i = 0; i < array.length; i++) {
 		if (array[i].length > desiredLength) array[i].splice(desiredLength);
 	}
 }
 
+function showLoadingDots() {
+	let count = 0;
+	return setInterval(() => {
+		process.stdout.write("."); // This writes a dot without a newline
+		count++;
+		if (count === 8) {
+			process.stdout.write("\r        \r"); // Clear the 5 dots and reset to start of the line
+			count = 0;
+		}
+	}, 500); // Every 500 milliseconds
+}
+
+function clearLoadingDots() {
+	process.stdout.write("\r        \r");
+}
 main();
