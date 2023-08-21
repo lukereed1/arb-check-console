@@ -32,9 +32,9 @@ cd arb-check-console
 npm install
 ```
 
-### 4. Edit API URL Endpoint:
+### 4. Edit API URL:
 
-- Open the config.json file in your preferred text editor and update the API_URL value to point to the appropriate endpoint:
+- Open the config.json file in your preferred text editor and update the API_URL:
 
   ```json
   {
@@ -64,10 +64,10 @@ npm install
     ```
 
 ### 6. Follow the on-screen prompts
+
 - Choose what you want scraped
 
   ![image](https://github.com/lukereed1/arb-check-console/assets/104820125/a43b9e72-95f8-4755-8573-cbe7c0c96dec)
-
 
 ## How it Works
 
