@@ -2,6 +2,10 @@
 
 Arb Check Console Application is a CLI tool designed to fetch sports betting data from various bookmakers using the Arb Check backend. It identifies arbitrage opportunities by sorting games based on their margins. It's designed to be used with the [Arb Calculator](https://github.com/lukereed1/arb-calculator).
 
+## What is Arbitrage?
+
+Betting/sports arbitrage is an example of arbitrage arising on betting markets due to either bookmakers' differing opinions on event outcomes or errors. When conditions allow, by placing one bet per each outcome with different betting companies, the bettor can make a profit regardless of the outcome.
+
 ## Features
 
 - **Multi-Sport Support**: Target specific betting markets with support for multiple sports, such as AFL and NRL.
