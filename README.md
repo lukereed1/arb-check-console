@@ -12,6 +12,17 @@ Betting/sports arbitrage is an example of arbitrage arising on betting markets d
 - **Arbitrage Opportunity Identification**: Games with margins under 100% signal potential arbitrage opportunities. Users can potentially lock in profits using the arb calculator.
 - **Single or Multi-Sport Scraping**: Choose to scrape data for individual sports or all supported sports at once.
 
+## Supported bookies
+- Sportsbet
+- Neds
+- Pointsbet
+- Tab
+- Unibet
+
+## Supported Sports
+- Rugby League
+- AFL
+
 ## Quick Start
 
 ### 1. Clone the repository:
@@ -67,7 +78,8 @@ npm install
 
 - Choose what you want scraped
 
-  ![image](https://github.com/lukereed1/arb-check-console/assets/104820125/a43b9e72-95f8-4755-8573-cbe7c0c96dec)
+  ![image](https://github.com/lukereed1/arb-check-console/assets/104820125/e42344fb-f3d2-4211-8810-49b2de86cd50)
+
 
 ## How it Works
 
@@ -79,7 +91,8 @@ npm install
 
 ## Example Output
 
-![image](https://github.com/lukereed1/arb-check-console/assets/104820125/2c9e6256-0e39-4ddb-965d-2f4d06265914)
+![image](https://github.com/lukereed1/arb-check-console/assets/104820125/1115a640-5256-42fb-ad15-637c7ac4d6c9)
+
 
 ## Future Plans
 
