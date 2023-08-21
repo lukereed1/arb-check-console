@@ -37,7 +37,8 @@ async function main() {
 			break;
 		case "3":
 			await importAllSports();
-			// Afl must be sorted due to some games being at the same time and bookies ordering them differently
+			/* Afl must be sorted due to some games being at the
+			 same time and bookies ordering them differently */
 			sortTeamsList(allGames[0]);
 			clearInterval(loading);
 			clearLoadingDots();
