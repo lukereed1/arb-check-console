@@ -1,18 +1,15 @@
 const fs = require("fs");
 const path = require("path");
+const readline = require("readline");
+const axios = require("axios");
 const configPath = path.join(__dirname, "config.json");
-
 const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
 const API_URL = config.API_URL;
 
-const axios = require("axios");
-const readline = require("readline");
 const allGames = [];
 const bestMargins = [];
 const selectedBooks = ["neds", "sportsbet", "unibet", "pointsbet", "tab"];
 const allSports = ["afl", "rugby-league"];
-
-require("dotenv").config();
 
 const rl = readline.createInterface({
 	input: process.stdin,
