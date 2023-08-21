@@ -22,21 +22,44 @@ Arb Check Console Application is a CLI tool designed to fetch sports betting dat
    cd arb-check-console
    ```
 
-3. **Run the executable**:
-   Depending on your platform:
+3. **Install Dependencies**:
 
-   - **Windows**: Double-click on `arb-check-console-win.exe`.
+   ```bash
+   npm install
+   ```
 
-   - **MacOS**: Double-click on `arb-check-console-macos.app` or run the following in the terminal:
-     ```bash
-     ./arb-check-console-macos
-     ```
-   - **Linux**: Run the following in the terminal:
-     ```bash
-     ./arb-check-console-linux
-     ```
+4. **Edit API URL Endpoint**:
 
-4. Follow the on-screen prompts to select between AFL, NRL, or scraping all sports.
+- Open the config.json file in your preferred text editor and update the API_URL value to point to the appropriate endpoint:
+
+  ```json
+  {
+  	"API_URL": "your_api_url_here"
+  }
+  ```
+
+5.  **Create an executable (Optional)**
+
+- Ensuring you're in the projects directory, type:
+
+  ```bash
+  pkg .
+  ```
+
+  Depending on your platform:
+
+  - **Windows**: Double-click on `arb-check-console-win.exe`.
+
+  - **MacOS**: Double-click on `arb-check-console-macos.app` or run the following in the terminal:
+    ```bash
+    ./arb-check-console-macos
+    ```
+  - **Linux**: Run the following in the terminal:
+    ```bash
+    ./arb-check-console-linux
+    ```
+
+6. Follow the on-screen prompts to select between AFL, NRL, or scraping all sports.
 
 ## How it Works
 
@@ -47,6 +70,7 @@ Arb Check Console Application is a CLI tool designed to fetch sports betting dat
 5. Enter odds into [Arb Calculator](https://github.com/lukereed1/arb-calculator) to determine stake sizes.
 
 ## Example Output
+
 ![image](https://github.com/lukereed1/arb-check-console/assets/104820125/2c9e6256-0e39-4ddb-965d-2f4d06265914)
 
 ## Future Plans
