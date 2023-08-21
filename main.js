@@ -12,7 +12,7 @@ const rl = readline.createInterface({
 });
 
 async function main() {
-	const userInput = await getInput("1. AFL\n2. NRL\n3. All Sports\n");
+	const userInput = await getInput("1. AFL\n2. NRL\n3. All Sports\n4. Exit\n");
 	const loading = showLoadingDots();
 	switch (userInput) {
 		case "1":
@@ -21,21 +21,25 @@ async function main() {
 			clearInterval(loading);
 			clearLoadingDots();
 			findGameStats();
-			process.exit(0);
+			main();
 			break;
 		case "2":
 			await importBookieDataForChosenSport("rugby-league");
 			clearInterval(loading);
 			clearLoadingDots();
 			findGameStats();
-			process.exit(0);
+			main();
 			break;
 		case "3":
 			await importAllSports();
-			sortTeamsList(allGames[0]); // Afl must be sorted
+			// Afl must be sorted due to some games being at the same time and bookies ordering them differently
+			sortTeamsList(allGames[0]);
 			clearInterval(loading);
 			clearLoadingDots();
 			findGameStats();
+			main();
+			break;
+		case "4":
 			process.exit(0);
 			break;
 		default:
