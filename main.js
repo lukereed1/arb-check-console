@@ -6,6 +6,8 @@ const bestMargins = [];
 const selectedBooks = ["neds", "sportsbet", "unibet", "pointsbet", "tab"];
 const allSports = ["afl", "rugby-league"];
 
+require("dotenv").config();
+
 const rl = readline.createInterface({
 	input: process.stdin,
 	output: process.stdout,
@@ -132,7 +134,7 @@ async function importBookieDataForChosenSport(sport) {
 
 async function getGames(bookie, sport) {
 	try {
-		const res = await axios.get(`http://localhost:5000/api/${bookie}/${sport}`);
+		const res = await axios.get(`${process.env.APIURL}${bookie}/${sport}`);
 		return res.data;
 	} catch (error) {
 		console.log(error.response.data);
