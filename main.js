@@ -3,7 +3,7 @@ const readline = require("readline");
 
 const allGames = [];
 const bestMargins = [];
-const selectedBooks = ["neds", "sportsbet", "pointsbet", "tab", "unibet"];
+const selectedBooks = ["neds", "sportsbet", "unibet", "pointsbet", "tab"];
 const allSports = ["afl", "rugby-league"];
 
 const rl = readline.createInterface({
@@ -17,6 +17,7 @@ async function main() {
 	switch (userInput) {
 		case "1":
 			await importBookieDataForChosenSport("afl");
+			allGames.forEach((game) => sortTeamsList(game));
 			clearInterval(loading);
 			clearLoadingDots();
 			findGameStats();
@@ -31,6 +32,7 @@ async function main() {
 			break;
 		case "3":
 			await importAllSports();
+			sortTeamsList(allGames[0]); // Afl must be sorted
 			clearInterval(loading);
 			clearLoadingDots();
 			findGameStats();
@@ -149,6 +151,12 @@ function showLoadingDots() {
 			count = 0;
 		}
 	}, 500);
+}
+
+function sortTeamsList(array) {
+	for (let i = 0; i < array.length; i++) {
+		array[i].sort((a, b) => a.firstTeam.localeCompare(b.firstTeam));
+	}
 }
 
 function clearLoadingDots() {
