@@ -10,25 +10,25 @@ Arb Check Console Application is a CLI tool designed to fetch sports betting dat
 
 ## Quick Start
 
-1. **Clone the repository**:
+### 1. Clone the repository:
 
-   ```bash
-   git clone https://github.com/lukereed1/arb-check-console.git
-   ```
+```bash
+git clone https://github.com/lukereed1/arb-check-console.git
+```
 
-2. **Navigate to the project directory**:
+### 2. Navigate to the project directory:
 
-   ```bash
-   cd arb-check-console
-   ```
+```bash
+cd arb-check-console
+```
 
-3. **Install Dependencies**:
+### 3. Install Dependencies:
 
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
 
-4. **Edit API URL Endpoint**:
+### 4. Edit API URL Endpoint:
 
 - Open the config.json file in your preferred text editor and update the API_URL value to point to the appropriate endpoint:
 
@@ -38,7 +38,7 @@ Arb Check Console Application is a CLI tool designed to fetch sports betting dat
   }
   ```
 
-5.  **Create an executable (Optional)**
+### 5. Create an executable (Optional)
 
 - Ensuring you're in the projects directory, type:
 
@@ -59,7 +59,7 @@ Arb Check Console Application is a CLI tool designed to fetch sports betting dat
     ./arb-check-console-linux
     ```
 
-6. Follow the on-screen prompts to select between AFL, NRL, or scraping all sports.
+### 6. Follow the on-screen prompts to select between AFL, NRL, or scraping all sports.
 
 ## How it Works
 
