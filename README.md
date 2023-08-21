@@ -46,6 +46,9 @@ Arb Check Console Application is a CLI tool designed to fetch sports betting dat
 4. Those with margins under 100% arbitrage opportunities.
 5. Enter odds into [Arb Calculator](https://github.com/lukereed1/arb-calculator) to determine stake sizes.
 
+## Example Output
+![image](https://github.com/lukereed1/arb-check-console/assets/104820125/2c9e6256-0e39-4ddb-965d-2f4d06265914)
+
 ## Future Plans
 
 - Extend support to more sports and bookmakers.
