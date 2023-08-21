@@ -25,15 +25,15 @@ Arb Check Console Application is a CLI tool designed to fetch sports betting dat
 3. **Run the executable**:
    Depending on your platform:
 
-   - **Windows**: Double-click on `arb-check-console.exe`.
+   - **Windows**: Double-click on `arb-check-console-win.exe`.
 
-   - **MacOS**: Double-click on `arb-check-console.app` or run the following in the terminal:
+   - **MacOS**: Double-click on `arb-check-console-macos.app` or run the following in the terminal:
      ```bash
-     ./arb-check-console
+     ./arb-check-console-macos
      ```
    - **Linux**: Run the following in the terminal:
      ```bash
-     ./arb-check-console
+     ./arb-check-console-linux
      ```
 
 4. Follow the on-screen prompts to select between AFL, NRL, or scraping all sports.
