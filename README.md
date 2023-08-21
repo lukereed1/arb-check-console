@@ -45,7 +45,7 @@ npm install
 
 ### 4. Edit API URL:
 
-- Open the config.json file in your preferred text editor and update the API_URL:
+- Open the config.json file in your preferred text editor and enter your API_URL:
 
   ```json
   {
@@ -86,7 +86,7 @@ npm install
 1. Users select the desired sport(s) to scrape from the menu, using the number that aligns with their choice.
 2. Data is fetched from the bookmakers via the Arb Check backend. Signified by the loading dots.
 3. Games are sorted by their margins.
-4. Those with margins under 100% arbitrage opportunities.
+4. Those with margins under 100% are arbitrage opportunities, the lower the better.
 5. Enter odds into [Arb Calculator](https://github.com/lukereed1/arb-calculator) to determine stake sizes.
 
 ## Example Output
@@ -97,6 +97,6 @@ npm install
 ## Future Plans
 
 - Extend support to more sports and bookmakers.
-- Implement automatic alerts through AWS SES if arbitrage opportunities are present.
+- Implement automatic alerts through AWS SES and Eventbridge if arbitrage opportunities are present.
 - Host backend on AWS EC2.
 - Direct integration with the arb calculator for real-time profit calculations.
