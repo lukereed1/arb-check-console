@@ -1,6 +1,12 @@
+const fs = require("fs");
+const path = require("path");
+const configPath = path.join(__dirname, "config.json");
+
+const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
+const API_URL = config.API_URL;
+
 const axios = require("axios");
 const readline = require("readline");
-
 const allGames = [];
 const bestMargins = [];
 const selectedBooks = ["neds", "sportsbet", "unibet", "pointsbet", "tab"];
@@ -134,7 +140,7 @@ async function importBookieDataForChosenSport(sport) {
 
 async function getGames(bookie, sport) {
 	try {
-		const res = await axios.get(`${process.env.APIURL}${bookie}/${sport}`);
+		const res = await axios.get(`${API_URL}${bookie}/${sport}`);
 		return res.data;
 	} catch (error) {
 		console.log(error.response.data);
