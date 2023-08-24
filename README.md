@@ -13,13 +13,19 @@ Betting/sports arbitrage is an example of arbitrage arising on betting markets d
 - **Single or Multi-Sport Scraping**: Choose to scrape data for individual sports or all supported sports at once.
 
 ## Supported bookies
+
 - Sportsbet
 - Neds
 - Pointsbet
 - Tab
 - Unibet
+- Palmerbet
+- TopSport
+- Boombet
+- BetDeluxe
 
 ## Supported Sports
+
 - Rugby League
 - AFL
 
@@ -80,7 +86,6 @@ npm install
 
   ![image](https://github.com/lukereed1/arb-check-console/assets/104820125/e42344fb-f3d2-4211-8810-49b2de86cd50)
 
-
 ## How it Works
 
 1. Users select the desired sport(s) to scrape from the menu, using the number that aligns with their choice.
@@ -92,7 +97,6 @@ npm install
 ## Example Output
 
 ![image](https://github.com/lukereed1/arb-check-console/assets/104820125/1115a640-5256-42fb-ad15-637c7ac4d6c9)
-
 
 ## Future Plans
 
