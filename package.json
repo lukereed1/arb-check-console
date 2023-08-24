@@ -5,12 +5,13 @@
 	"main": "main.js",
 	"bin": "main.js",
 	"scripts": {
-		"start": "main.js"
+		"start": "node main.js"
 	},
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
 		"axios": "0.27.2",
+		"bluebird": "^3.7.2",
 		"pkg": "^5.8.1"
 	}
 }

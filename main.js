@@ -2,13 +2,14 @@ const fs = require("fs");
 const path = require("path");
 const readline = require("readline");
 const axios = require("axios");
+const bluebird = require("bluebird");
 const configPath = path.join(__dirname, "config.json");
 const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
 
 const API_URL = config.API_URL;
 const allGames = [];
 const bestMargins = [];
-const selectedBooks = ["neds", "sportsbet", "unibet", "pointsbet", "tab"];
+const selectedBooks = ["sportsbet", "unibet", "boombet", "palmerbet"];
 const allSports = ["afl", "rugby-league"];
 
 const rl = readline.createInterface({
@@ -18,9 +19,10 @@ const rl = readline.createInterface({
 
 async function main() {
 	const userInput = await getInput("1. AFL\n2. NRL\n3. All Sports\n4. Exit\n");
-	const loading = showLoadingDots();
+	let loading;
 	switch (userInput) {
 		case "1":
+			loading = showLoadingDots();
 			await importBookieDataForChosenSport("afl");
 			allGames.forEach((game) => sortTeamsList(game));
 			clearInterval(loading);
@@ -29,6 +31,7 @@ async function main() {
 			resetArrays();
 			await main();
 		case "2":
+			loading = showLoadingDots();
 			await importBookieDataForChosenSport("rugby-league");
 			clearInterval(loading);
 			clearLoadingDots();
@@ -36,6 +39,7 @@ async function main() {
 			resetArrays();
 			await main();
 		case "3":
+			loading = showLoadingDots();
 			await importAllSports();
 			/* Afl must be sorted due to some games being at the
 			 same time and bookies ordering them differently */
@@ -61,22 +65,51 @@ async function importAllSports() {
 	}
 }
 
+// // Import all sports option that imports all sports for all books in parallel. High load!
+// async function importAllSports() {
+//     let promises = allSports.map(sport => importBookieDataForChosenSport(sport));
+//     await Promise.all(promises);
+// }
+
+// Import bookie data function using bluebird to allow three scrapers to run at once. Higher load!
 async function importBookieDataForChosenSport(sport) {
 	let lowestAmountOfGames = Infinity;
-	let sortedSport = [];
-	for (let i = 0; i < selectedBooks.length; i++) {
-		let allBookieGames = await getGames(selectedBooks[i], sport);
-		if (selectedBooks[i].length === 0)
-			console.log(`${selectedBooks[i]} has no games available`);
 
-		if (allBookieGames.length < lowestAmountOfGames)
-			lowestAmountOfGames = allBookieGames.length;
+	let sortedSport = await bluebird.map(
+		selectedBooks,
+		async (book) => {
+			let allBookieGames = await getGames(book, sport);
+			if (book.length === 0) console.log(`${book} has no games available`);
+			return allBookieGames;
+		},
+		{ concurrency: 3 }
+	);
 
-		sortedSport.push(allBookieGames);
-	}
+	sortedSport.forEach((games) => {
+		if (games.length < lowestAmountOfGames) lowestAmountOfGames = games.length;
+	});
+
 	allGames.push(sortedSport);
 	trimGamesArrayLength(sortedSport, lowestAmountOfGames);
 }
+
+// // Import bookie data function that runs one script at a time
+// async function importBookieDataForChosenSport(sport) {
+// 	let lowestAmountOfGames = Infinity;
+// 	let sortedSport = [];
+// 	for (let i = 0; i < selectedBooks.length; i++) {
+// 		let allBookieGames = await getGames(selectedBooks[i], sport);
+// 		if (selectedBooks[i].length === 0)
+// 			console.log(`${selectedBooks[i]} has no games available`);
+
+// 		if (allBookieGames.length < lowestAmountOfGames)
+// 			lowestAmountOfGames = allBookieGames.length;
+
+// 		sortedSport.push(allBookieGames);
+// 	}
+// 	allGames.push(sortedSport);
+// 	trimGamesArrayLength(sortedSport, lowestAmountOfGames);
+// }
 
 async function getGames(bookie, sport) {
 	try {
