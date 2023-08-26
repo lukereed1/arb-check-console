@@ -9,7 +9,17 @@ const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
 const API_URL = config.API_URL;
 const allGames = [];
 const bestMargins = [];
-const selectedBooks = ["sportsbet", "unibet", "boombet", "palmerbet"];
+const selectedBooks = [
+	"sportsbet",
+	"unibet",
+	"boombet",
+	"palmerbet",
+	"tab",
+	"betdeluxe",
+	"topsport",
+	"neds",
+	"pointsbet",
+];
 const allSports = ["afl", "rugby-league"];
 
 const rl = readline.createInterface({
@@ -51,7 +61,6 @@ async function main() {
 			await main();
 		case "4":
 			process.exit(0);
-			break;
 		default:
 			console.log("Invalid input\n");
 			await main();
@@ -65,13 +74,7 @@ async function importAllSports() {
 	}
 }
 
-// // Import all sports option that imports all sports for all books in parallel. High load!
-// async function importAllSports() {
-//     let promises = allSports.map(sport => importBookieDataForChosenSport(sport));
-//     await Promise.all(promises);
-// }
-
-// Import bookie data function using bluebird to allow three scrapers to run at once. Higher load!
+// Import bookie data function using bluebird to allow multiple scrapers to run at once. Higher load!
 async function importBookieDataForChosenSport(sport) {
 	let lowestAmountOfGames = Infinity;
 
@@ -82,7 +85,7 @@ async function importBookieDataForChosenSport(sport) {
 			if (book.length === 0) console.log(`${book} has no games available`);
 			return allBookieGames;
 		},
-		{ concurrency: 3 }
+		{ concurrency: 2 }
 	);
 
 	sortedSport.forEach((games) => {
@@ -92,24 +95,6 @@ async function importBookieDataForChosenSport(sport) {
 	allGames.push(sortedSport);
 	trimGamesArrayLength(sortedSport, lowestAmountOfGames);
 }
-
-// // Import bookie data function that runs one script at a time
-// async function importBookieDataForChosenSport(sport) {
-// 	let lowestAmountOfGames = Infinity;
-// 	let sortedSport = [];
-// 	for (let i = 0; i < selectedBooks.length; i++) {
-// 		let allBookieGames = await getGames(selectedBooks[i], sport);
-// 		if (selectedBooks[i].length === 0)
-// 			console.log(`${selectedBooks[i]} has no games available`);
-
-// 		if (allBookieGames.length < lowestAmountOfGames)
-// 			lowestAmountOfGames = allBookieGames.length;
-
-// 		sortedSport.push(allBookieGames);
-// 	}
-// 	allGames.push(sortedSport);
-// 	trimGamesArrayLength(sortedSport, lowestAmountOfGames);
-// }
 
 async function getGames(bookie, sport) {
 	try {
