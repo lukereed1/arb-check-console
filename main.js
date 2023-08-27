@@ -9,18 +9,9 @@ const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
 const API_URL = config.API_URL;
 const allGames = [];
 const bestMargins = [];
-const selectedBooks = [
-	"unibet",
-	"betdeluxe",
-	"neds",
-	"sportsbet",
-	"boombet",
-	"tab",
-	"palmerbet",
-	"topsport",
-	"pointsbet",
-];
+const selectedBooks = ["neds", "unibet"];
 const allSports = ["afl", "rugby-league", "mlb"];
+const soccerLeagues = ["epl"];
 
 const rl = readline.createInterface({
 	input: process.stdin,
@@ -35,27 +26,27 @@ async function main() {
 	switch (userInput) {
 		case "1":
 			loading = showLoadingDots();
-			await importBookieDataForChosenSport("afl");
+			await importBookieDataForTwoOutcomeSport("afl");
 			allGames.forEach((game) => sortTeamsList(game));
 			clearInterval(loading);
 			clearLoadingDots();
-			findGameStats();
+			findAndCompareGameStats();
 			resetArrays();
 			await main();
 		case "2":
 			loading = showLoadingDots();
-			await importBookieDataForChosenSport("rugby-league");
+			await importBookieDataForTwoOutcomeSport("rugby-league");
 			clearInterval(loading);
 			clearLoadingDots();
-			findGameStats();
+			findAndCompareGameStats();
 			resetArrays();
 			await main();
 		case "3":
 			loading = showLoadingDots();
-			await importBookieDataForChosenSport("mlb");
+			await importBookieDataForTwoOutcomeSport("mlb");
 			clearInterval(loading);
 			clearLoadingDots();
-			findGameStats();
+			findAndCompareGameStats();
 			resetArrays();
 			await main();
 		case "4":
@@ -66,7 +57,7 @@ async function main() {
 			sortTeamsList(allGames[0]);
 			clearInterval(loading);
 			clearLoadingDots();
-			findGameStats(); // Prints to console
+			findAndCompareGameStats(); // Prints to console
 			resetArrays();
 			await main();
 		case "5":
@@ -80,12 +71,12 @@ async function main() {
 
 async function importAllSports() {
 	for (let i = 0; i < allSports.length; i++) {
-		await importBookieDataForChosenSport(allSports[i]);
+		await importBookieDataForTwoOutcomeSport(allSports[i]);
 	}
 }
 
 // Import bookie data function using bluebird to allow multiple scrapers to run at once. Higher load!
-async function importBookieDataForChosenSport(sport) {
+async function importBookieDataForTwoOutcomeSport(sport) {
 	let lowestAmountOfGames = Infinity;
 
 	let allSportsAllBooksIncludingBooksWithNoGames = await bluebird.map(
@@ -143,6 +134,32 @@ async function importBookieDataForChosenSport(sport) {
 	allGames.push(sortedSportAllBooks);
 }
 
+async function importBookieDataForSoccer(league) {
+	let lowestAmountOfGames = Infinity;
+
+	let allSportsAllBooksIncludingBooksWithNoGames = await bluebird.map(
+		selectedBooks,
+		async (book) => {
+			let allBookieGames = await getSoccerGames(book, league);
+			return allBookieGames;
+		},
+		{ concurrency: 3 }
+	);
+
+	// Removes bookie if it is showing no games
+	let sortedSportAllBooks = allSportsAllBooksIncludingBooksWithNoGames.filter(
+		(subArray) => subArray.length > 0
+	);
+
+	// Finds bookie with lowest amount of games
+	sortedSportAllBooks.forEach((games) => {
+		if (games.length < lowestAmountOfGames) lowestAmountOfGames = games.length;
+	});
+
+	trimGamesArrayLength(sortedSportAllBooks, lowestAmountOfGames);
+	allGames.push(sortedSportAllBooks);
+}
+
 async function getGames(bookie, sport) {
 	try {
 		const res = await axios.get(`${API_URL}${bookie}/${sport}`);
@@ -152,6 +169,16 @@ async function getGames(bookie, sport) {
 	}
 }
 
+async function getSoccerGames(bookie, league) {
+	try {
+		const res = await axios.get(`${API_URL}${bookie}/soccer/${league}`);
+		return res.data;
+	} catch (error) {
+		console.log(error.response.data);
+	}
+}
+
+// Finds best odds for each outcome for bookies selected
 function compareSelectedBooks(sport) {
 	for (let k = 0; k < sport[0].length; k++) {
 		let firstTeamBestOdds = 0;
@@ -160,6 +187,7 @@ function compareSelectedBooks(sport) {
 		let secondTeamBookieWithBestOdds;
 		let firstTeamPlaying;
 		let secondTeamPlaying;
+
 		for (let i = 0; i < sport.length; i++) {
 			firstTeamPlaying = sport[i][k].firstTeam;
 			secondTeamPlaying = sport[i][k].secondTeam;
@@ -186,6 +214,51 @@ function compareSelectedBooks(sport) {
 	}
 }
 
+function compareSelectedBooksForSoccer(league) {
+	for (let k = 0; k < league[0].length; k++) {
+		let firstTeamBestOdds = 0;
+		let secondTeamBestOdds = 0;
+		let drawBestOdds = 0;
+		let firstTeamBookieWithBestOdds;
+		let secondTeamBookieWithBestOdds;
+		let drawBestOddsBookie;
+		let firstTeamPlaying;
+		let secondTeamPlaying;
+
+		for (let i = 0; i < league.length; i++) {
+			firstTeamPlaying = league[i][k].firstTeam;
+			secondTeamPlaying = league[i][k].secondTeam;
+
+			if (league[i][k].firstTeamOdds >= firstTeamBestOdds) {
+				firstTeamBestOdds = league[i][k].firstTeamOdds;
+				firstTeamBookieWithBestOdds = league[i][k].bookie;
+			}
+
+			if (league[i][k].secondTeamOdds >= secondTeamBestOdds) {
+				secondTeamBestOdds = league[i][k].secondTeamOdds;
+				secondTeamBookieWithBestOdds = league[i][k].bookie;
+			}
+
+			if (league[i][k].drawOdds >= drawBestOdds) {
+				drawBestOdds = league[i][k].drawOdds;
+				drawBestOddsBookie = league[i][k].bookie;
+			}
+		}
+
+		const gameData = {
+			game: `${firstTeamPlaying} vs ${secondTeamPlaying}`,
+			firstTeamBestOdds: firstTeamBestOdds,
+			firstTeamBookie: firstTeamBookieWithBestOdds,
+			drawBestOdds: drawBestOdds,
+			drawBookie: drawBestOddsBookie,
+			secondTeamBestOdds: secondTeamBestOdds,
+			secondTeamBookie: secondTeamBookieWithBestOdds,
+		};
+
+		bestMargins.push(gameData);
+	}
+}
+
 function ensureBookiesHaveSameGameData(array) {
 	let allTeams = new Set(
 		array.flat().map((obj) => obj.firstTeam.split(" ")[0])
@@ -204,7 +277,7 @@ function ensureBookiesHaveSameGameData(array) {
 	);
 }
 
-function findGameStats() {
+function findAndCompareGameStats() {
 	allGames.forEach((sport) => compareSelectedBooks(sport));
 	findMarginPercentage(bestMargins);
 	bestMargins.sort((a, b) => a.margin - b.margin);
@@ -263,8 +336,11 @@ function resetArrays() {
 }
 
 async function test() {
-	await importBookieDataForChosenSport("mlb");
+	await importBookieDataForSoccer("epl");
+	allGames.forEach((game) => sortTeamsList(game));
 	console.log(allGames);
+	allGames.forEach((sport) => compareSelectedBooksForSoccer(sport));
+	console.log(bestMargins);
 }
 
-main();
+test();
