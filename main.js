@@ -16,6 +16,9 @@ const selectedBooks = [
 	"sportsbet",
 	"boombet",
 	"tab",
+	"palmerbet",
+	"topsport",
+	"pointsbet",
 ];
 const allSports = ["afl", "rugby-league", "mlb"];
 
@@ -91,7 +94,7 @@ async function importBookieDataForChosenSport(sport) {
 			let allBookieGames = await getGames(book, sport);
 			return allBookieGames;
 		},
-		{ concurrency: 2 }
+		{ concurrency: 3 }
 	);
 
 	// Removes bookie if it is showing no games

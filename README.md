@@ -28,6 +28,7 @@ Betting/sports arbitrage is an example of arbitrage arising on betting markets d
 
 - Rugby League
 - AFL
+- Baseball
 
 ## Quick Start
 
