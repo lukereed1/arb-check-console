@@ -9,7 +9,17 @@ const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
 const API_URL = config.API_URL;
 const allGames = [];
 const bestMargins = [];
-const selectedBooks = ["neds", "unibet"];
+const selectedBooks = [
+	"neds",
+	"sportsbet",
+	"unibet",
+	"tab",
+	"betdeluxe",
+	"boombet",
+	"palmerbet",
+	"topsport",
+	"pointsbet",
+];
 const allSports = ["afl", "rugby-league", "mlb"];
 const soccerLeagues = ["epl"];
 
@@ -30,25 +40,37 @@ async function main() {
 			allGames.forEach((game) => sortTeamsList(game));
 			clearInterval(loading);
 			clearLoadingDots();
-			findAndCompareGameStats();
+			allGames.forEach((sport) => compareSelectedBooks(sport));
+			findMarginPercentage(bestMargins);
+			sortResultsByMargin(bestMargins);
+			console.log(bestMargins);
 			resetArrays();
 			await main();
+
 		case "2":
 			loading = showLoadingDots();
 			await importBookieDataForTwoOutcomeSport("rugby-league");
 			clearInterval(loading);
 			clearLoadingDots();
-			findAndCompareGameStats();
+			allGames.forEach((sport) => compareSelectedBooks(sport));
+			findMarginPercentage(bestMargins);
+			sortResultsByMargin(bestMargins);
+			console.log(bestMargins);
 			resetArrays();
 			await main();
+
 		case "3":
 			loading = showLoadingDots();
 			await importBookieDataForTwoOutcomeSport("mlb");
 			clearInterval(loading);
 			clearLoadingDots();
-			findAndCompareGameStats();
+			allGames.forEach((sport) => compareSelectedBooks(sport));
+			findMarginPercentage(bestMargins);
+			sortResultsByMargin(bestMargins);
+			console.log(bestMargins);
 			resetArrays();
 			await main();
+
 		case "4":
 			loading = showLoadingDots();
 			await importAllSports();
@@ -57,11 +79,16 @@ async function main() {
 			sortTeamsList(allGames[0]);
 			clearInterval(loading);
 			clearLoadingDots();
-			findAndCompareGameStats(); // Prints to console
+			allGames.forEach((sport) => compareSelectedBooks(sport));
+			findMarginPercentage(bestMargins);
+			sortResultsByMargin(bestMargins);
+			console.log(bestMargins);
 			resetArrays();
 			await main();
+
 		case "5":
 			process.exit(0);
+
 		default:
 			console.log("Invalid input\n");
 			await main();
@@ -294,6 +321,18 @@ function findMarginPercentage(games) {
 	}
 }
 
+function findMarginPercentageSoccer(games) {
+	for (let i = 0; i < games.length; i++) {
+		let margin =
+			1 / games[i].firstTeamBestOdds +
+			1 / games[i].secondTeamBestOdds +
+			1 / games[i].drawBestOdds;
+
+		let roundedMargin = (margin * 100).toFixed(2);
+		bestMargins[i].margin = roundedMargin;
+	}
+}
+
 function trimGamesArrayLength(array, desiredLength) {
 	for (let i = 0; i < array.length; i++) {
 		if (array[i].length > desiredLength) array[i].splice(desiredLength);
@@ -304,6 +343,10 @@ function sortTeamsList(array) {
 	for (let i = 0; i < array.length; i++) {
 		array[i].sort((a, b) => a.firstTeam.localeCompare(b.firstTeam));
 	}
+}
+
+function sortResultsByMargin(array) {
+	array.sort((a, b) => a.margin - b.margin);
 }
 
 async function getInput(prompt) {
@@ -340,6 +383,8 @@ async function test() {
 	allGames.forEach((game) => sortTeamsList(game));
 	console.log(allGames);
 	allGames.forEach((sport) => compareSelectedBooksForSoccer(sport));
+	findMarginPercentageSoccer(bestMargins);
+	sortResultsByMargin(bestMargins);
 	console.log(bestMargins);
 }
 
