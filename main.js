@@ -12,15 +12,15 @@ const allSoccerGames = [];
 const bestMargins = [];
 const bestMarginsSoccer = [];
 const selectedBooks = [
-	// "neds",
-	// "sportsbet",
-	// "unibet",
-	// "tab",
-	// "betdeluxe",
-	// "boombet",
+	"neds",
+	"sportsbet",
+	"unibet",
+	"tab",
+	"betdeluxe",
+	"boombet",
 	"palmerbet",
 	"topsport",
-	// "pointsbet",
+	"pointsbet",
 ];
 const allSports = ["afl", "rugby-league", "mlb"];
 const soccerLeagues = ["epl"];
@@ -88,8 +88,6 @@ async function main() {
 		case "5":
 			loading = showLoadingDots();
 			await importAllSports();
-			/* Afl must be sorted due to some games being at the
-			 same time and bookies ordering them differently */
 			sortTeamsList(allGames[0]);
 			clearInterval(loading);
 			clearLoadingDots();
@@ -123,10 +121,10 @@ async function importAllSports() {
 	}
 }
 
-// Import bookie data function using bluebird to allow multiple scrapers to run at once. Higher load!
 async function importBookieDataForTwoOutcomeSport(sport) {
 	let lowestAmountOfGames = Infinity;
 
+	// Bluebird allows multiple scrapers to run at once for a faster result, although higher cpu load
 	let allSportsAllBooksIncludingBooksWithNoGames = await bluebird.map(
 		selectedBooks,
 		async (book) => {
@@ -147,21 +145,18 @@ async function importBookieDataForTwoOutcomeSport(sport) {
 	});
 
 	if (sport === "mlb") {
-		// Removes bookies not compatible with MLB at the moment
+		/* MLB home and away teams are always inconsistent across books
+		this checks one order and makes the rest the same */
+		let teamOne = normalizeTeamName(
+			sortedSportAllBooks[0][0].firstTeam.split(" ")[0]
+		);
+		console.log(teamOne);
 		for (let i = 0; i < sortedSportAllBooks.length; i++) {
 			if (
-				sortedSportAllBooks[i][0].bookie === "Tab" ||
-				sortedSportAllBooks[i][0].bookie === "BetDeluxe"
+				!normalizeTeamName(sortedSportAllBooks[i][0].firstTeam).includes(
+					teamOne
+				)
 			) {
-				sortedSportAllBooks.splice(i, 1);
-			}
-		}
-
-		/* MLB team orders always different across books
-		this checks one order and makes the rest the same */
-		let teamOne = sortedSportAllBooks[0][0].firstTeam.split()[0];
-		for (let i = 0; i < sortedSportAllBooks.length; i++) {
-			if (sortedSportAllBooks[i][0].firstTeam.split()[0] !== teamOne) {
 				sortedSportAllBooks[i].forEach((game) => {
 					let tempTeam = game.firstTeam;
 					game.firstTeam = game.secondTeam;
@@ -177,7 +172,6 @@ async function importBookieDataForTwoOutcomeSport(sport) {
 		sortTeamsList(sortedSportAllBooks);
 		sortedSportAllBooks = ensureBookiesHaveSameGameData(sortedSportAllBooks);
 	}
-
 	trimGamesArrayLength(sortedSportAllBooks, lowestAmountOfGames);
 	allGames.push(sortedSportAllBooks);
 }
@@ -185,6 +179,7 @@ async function importBookieDataForTwoOutcomeSport(sport) {
 async function importBookieDataForSoccer(league) {
 	let lowestAmountOfGames = Infinity;
 
+	// Bluebird allows multiple scrapers to run at once for a faster result, although higher cpu load
 	let allSportsAllBooksIncludingBooksWithNoGames = await bluebird.map(
 		selectedBooks,
 		async (book) => {
@@ -228,7 +223,6 @@ async function getSoccerGames(bookie, league) {
 	}
 }
 
-// Finds best odds for each outcome for bookies selected
 function compareSelectedBooks(sport) {
 	for (let k = 0; k < sport[0].length; k++) {
 		let firstTeamBestOdds = 0;
@@ -311,18 +305,18 @@ function compareSelectedBooksForSoccer(league) {
 
 function ensureBookiesHaveSameGameData(array) {
 	let allTeams = new Set(
-		array.flat().map((obj) => obj.firstTeam.split(" ")[0])
+		array.flat().map((obj) => normalizeTeamName(obj.firstTeam).split(" ")[0])
 	);
 
 	allTeams = [...allTeams].filter((team) =>
 		array.every((subArray) =>
-			subArray.some((obj) => obj.firstTeam.startsWith(team))
+			subArray.some((obj) => normalizeTeamName(obj.firstTeam).startsWith(team))
 		)
 	);
 
 	return array.map((subArray) =>
 		allTeams.map((team) =>
-			subArray.find((obj) => obj.firstTeam.startsWith(team))
+			subArray.find((obj) => normalizeTeamName(obj.firstTeam).startsWith(team))
 		)
 	);
 }
@@ -368,7 +362,8 @@ function sortTeamsList(array) {
 function normalizeTeamName(name) {
 	if (name.toLowerCase() === "manchester city") return "man city";
 	if (name.toLowerCase() === "manchester united") return "man united";
-	// Add more such mappings as required
+	if (name.toLowerCase() === "la dodgers") return "los angeles dodgers";
+
 	return name.toLowerCase();
 }
 
@@ -407,14 +402,6 @@ function resetArrays() {
 	allSoccerGames.length = 0;
 }
 
-async function test() {
-	await importBookieDataForSoccer("epl");
-	// allGames.forEach((game) => sortTeamsList(game));
-	console.log(allSoccerGames);
-	allSoccerGames.forEach((sport) => compareSelectedBooksForSoccer(sport));
-	findMarginPercentageSoccer(bestMarginsSoccer);
-	sortResultsByMargin(bestMarginsSoccer);
-	console.log(bestMarginsSoccer);
-}
+async function test() {}
 
-test();
+main();
