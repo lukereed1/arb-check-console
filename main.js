@@ -8,17 +8,19 @@ const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
 
 const API_URL = config.API_URL;
 const allGames = [];
+const allSoccerGames = [];
 const bestMargins = [];
+const bestMarginsSoccer = [];
 const selectedBooks = [
 	"neds",
-	"sportsbet",
-	"unibet",
+	// "sportsbet",
+	// "unibet",
 	"tab",
-	"betdeluxe",
-	"boombet",
-	"palmerbet",
-	"topsport",
-	"pointsbet",
+	// "betdeluxe",
+	// "boombet",
+	// "palmerbet",
+	// "topsport",
+	// "pointsbet",
 ];
 const allSports = ["afl", "rugby-league", "mlb"];
 const soccerLeagues = ["epl"];
@@ -30,7 +32,7 @@ const rl = readline.createInterface({
 
 async function main() {
 	const userInput = await getInput(
-		"1. AFL\n2. NRL\n3. MLB\n4. All Sports\n5. Exit\n"
+		"1. AFL\n2. NRL\n3. MLB\n4. EPL\n5. All Sports\n6. Exit\n"
 	);
 	let loading;
 	switch (userInput) {
@@ -73,6 +75,18 @@ async function main() {
 
 		case "4":
 			loading = showLoadingDots();
+			await importBookieDataForSoccer("epl");
+			clearInterval(loading);
+			clearLoadingDots();
+			allSoccerGames.forEach((sport) => compareSelectedBooksForSoccer(sport));
+			findMarginPercentageSoccer(bestMarginsSoccer);
+			sortResultsByMargin(bestMarginsSoccer);
+			console.log(bestMarginsSoccer);
+			resetArrays();
+			await main();
+
+		case "5":
+			loading = showLoadingDots();
 			await importAllSports();
 			/* Afl must be sorted due to some games being at the
 			 same time and bookies ordering them differently */
@@ -80,13 +94,16 @@ async function main() {
 			clearInterval(loading);
 			clearLoadingDots();
 			allGames.forEach((sport) => compareSelectedBooks(sport));
+			allSoccerGames.forEach((sport) => compareSelectedBooksForSoccer(sport));
 			findMarginPercentage(bestMargins);
+			findMarginPercentageSoccer(bestMarginsSoccer);
+			bestMarginsSoccer.forEach((league) => bestMargins.push(league));
 			sortResultsByMargin(bestMargins);
 			console.log(bestMargins);
 			resetArrays();
 			await main();
 
-		case "5":
+		case "6":
 			process.exit(0);
 
 		default:
@@ -99,6 +116,10 @@ async function main() {
 async function importAllSports() {
 	for (let i = 0; i < allSports.length; i++) {
 		await importBookieDataForTwoOutcomeSport(allSports[i]);
+	}
+
+	for (let i = 0; i < soccerLeagues.length; i++) {
+		await importBookieDataForSoccer(soccerLeagues[i]);
 	}
 }
 
@@ -183,8 +204,9 @@ async function importBookieDataForSoccer(league) {
 		if (games.length < lowestAmountOfGames) lowestAmountOfGames = games.length;
 	});
 
+	sortTeamsList(sortedSportAllBooks);
 	trimGamesArrayLength(sortedSportAllBooks, lowestAmountOfGames);
-	allGames.push(sortedSportAllBooks);
+	allSoccerGames.push(sortedSportAllBooks);
 }
 
 async function getGames(bookie, sport) {
@@ -282,7 +304,7 @@ function compareSelectedBooksForSoccer(league) {
 			secondTeamBookie: secondTeamBookieWithBestOdds,
 		};
 
-		bestMargins.push(gameData);
+		bestMarginsSoccer.push(gameData);
 	}
 }
 
@@ -304,13 +326,6 @@ function ensureBookiesHaveSameGameData(array) {
 	);
 }
 
-function findAndCompareGameStats() {
-	allGames.forEach((sport) => compareSelectedBooks(sport));
-	findMarginPercentage(bestMargins);
-	bestMargins.sort((a, b) => a.margin - b.margin);
-	console.log(bestMargins);
-}
-
 function findMarginPercentage(games) {
 	for (let i = 0; i < games.length; i++) {
 		let margin =
@@ -329,7 +344,7 @@ function findMarginPercentageSoccer(games) {
 			1 / games[i].drawBestOdds;
 
 		let roundedMargin = (margin * 100).toFixed(2);
-		bestMargins[i].margin = roundedMargin;
+		bestMarginsSoccer[i].margin = roundedMargin;
 	}
 }
 
@@ -341,8 +356,18 @@ function trimGamesArrayLength(array, desiredLength) {
 
 function sortTeamsList(array) {
 	for (let i = 0; i < array.length; i++) {
-		array[i].sort((a, b) => a.firstTeam.localeCompare(b.firstTeam));
+		array[i].sort((a, b) =>
+			normalizeTeamName(a.firstTeam).localeCompare(
+				normalizeTeamName(b.firstTeam)
+			)
+		);
 	}
+}
+
+function normalizeTeamName(name) {
+	if (name.toLowerCase() === "manchester city") return "man city";
+	// Add more such mappings as required
+	return name.toLowerCase();
 }
 
 function sortResultsByMargin(array) {
@@ -375,17 +400,19 @@ function clearLoadingDots() {
 
 function resetArrays() {
 	bestMargins.length = 0;
+	bestMarginsSoccer.length = 0;
 	allGames.length = 0;
+	allSoccerGames.length = 0;
 }
 
 async function test() {
 	await importBookieDataForSoccer("epl");
-	allGames.forEach((game) => sortTeamsList(game));
-	console.log(allGames);
-	allGames.forEach((sport) => compareSelectedBooksForSoccer(sport));
-	findMarginPercentageSoccer(bestMargins);
-	sortResultsByMargin(bestMargins);
-	console.log(bestMargins);
+	// allGames.forEach((game) => sortTeamsList(game));
+	console.log(allSoccerGames);
+	allSoccerGames.forEach((sport) => compareSelectedBooksForSoccer(sport));
+	findMarginPercentageSoccer(bestMarginsSoccer);
+	sortResultsByMargin(bestMarginsSoccer);
+	console.log(bestMarginsSoccer);
 }
 
-test();
+main();
