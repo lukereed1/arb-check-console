@@ -12,14 +12,14 @@ const allSoccerGames = [];
 const bestMargins = [];
 const bestMarginsSoccer = [];
 const selectedBooks = [
-	"neds",
+	// "neds",
 	// "sportsbet",
 	// "unibet",
-	"tab",
+	// "tab",
 	// "betdeluxe",
 	// "boombet",
-	// "palmerbet",
-	// "topsport",
+	"palmerbet",
+	"topsport",
 	// "pointsbet",
 ];
 const allSports = ["afl", "rugby-league", "mlb"];
@@ -205,6 +205,7 @@ async function importBookieDataForSoccer(league) {
 	});
 
 	sortTeamsList(sortedSportAllBooks);
+	sortedSportAllBooks = ensureBookiesHaveSameGameData(sortedSportAllBooks);
 	trimGamesArrayLength(sortedSportAllBooks, lowestAmountOfGames);
 	allSoccerGames.push(sortedSportAllBooks);
 }
@@ -366,6 +367,7 @@ function sortTeamsList(array) {
 
 function normalizeTeamName(name) {
 	if (name.toLowerCase() === "manchester city") return "man city";
+	if (name.toLowerCase() === "manchester united") return "man united";
 	// Add more such mappings as required
 	return name.toLowerCase();
 }
@@ -415,4 +417,4 @@ async function test() {
 	console.log(bestMarginsSoccer);
 }
 
-main();
+test();
