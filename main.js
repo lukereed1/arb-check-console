@@ -210,7 +210,9 @@ async function getGames(bookie, sport) {
 		const res = await axios.get(`${API_URL}${bookie}/${sport}`);
 		return res.data;
 	} catch (error) {
-		console.log(error.response.data);
+		console.log(
+			`${error.config.path} FAILED\nmessage: ${error.response.statusText}`
+		);
 	}
 }
 
@@ -305,18 +307,22 @@ function compareSelectedBooksForSoccer(league) {
 
 function ensureBookiesHaveSameGameData(array) {
 	let allTeams = new Set(
-		array.flat().map((obj) => normalizeTeamName(obj.firstTeam).split(" ")[0])
+		array
+			.flat()
+			.map((obj) =>
+				normalizeTeamName(obj.firstTeam).split(" ").splice(0, 2).join(" ")
+			)
 	);
 
 	allTeams = [...allTeams].filter((team) =>
 		array.every((subArray) =>
-			subArray.some((obj) => normalizeTeamName(obj.firstTeam).startsWith(team))
+			subArray.some((obj) => normalizeTeamName(obj.firstTeam).includes(team))
 		)
 	);
 
 	return array.map((subArray) =>
 		allTeams.map((team) =>
-			subArray.find((obj) => normalizeTeamName(obj.firstTeam).startsWith(team))
+			subArray.find((obj) => normalizeTeamName(obj.firstTeam).includes(team))
 		)
 	);
 }
@@ -363,6 +369,7 @@ function normalizeTeamName(name) {
 	if (name.toLowerCase() === "manchester city") return "man city";
 	if (name.toLowerCase() === "manchester united") return "man united";
 	if (name.toLowerCase() === "la dodgers") return "los angeles dodgers";
+	if (name.toLowerCase() === "ny yankees") return "new york yankees";
 
 	return name.toLowerCase();
 }
