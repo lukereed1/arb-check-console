@@ -98,7 +98,8 @@ npm install
 
 - Choose what you want scraped
 
-  ![image](https://github.com/lukereed1/arb-check-console/assets/104820125/e42344fb-f3d2-4211-8810-49b2de86cd50)
+![image](https://github.com/lukereed1/arb-check-console/assets/104820125/f4f960d7-5cce-4e0a-96f5-47ef0ad5c836)
+
 
 ## How it Works
 
@@ -110,7 +111,8 @@ npm install
 
 ## Example Output
 
-![image](https://github.com/lukereed1/arb-check-console/assets/104820125/1115a640-5256-42fb-ad15-637c7ac4d6c9)
+![image](https://github.com/lukereed1/arb-check-console/assets/104820125/fd4ef8ed-a0e8-4bde-af61-17b42da15ac2)
+
 
 ## Future Plans
 
